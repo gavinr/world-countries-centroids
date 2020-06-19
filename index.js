@@ -41,19 +41,6 @@ const crossesAntiMeridian = (coordinates) => {
   return crossesMeridian(coordinates) && atLeastOneNearAntiMeridian;
 };
 
-const _moveGeometry = (coordinates, amount) => {
-  // move by 1 degree right!
-  const retCoordinates = coordinates.map((polygon) => {
-    return polygon.map((ring) => {
-      return ring.map((point) => {
-        return [point[0] + amount, point[1]];
-      });
-    });
-  });
-
-  return retCoordinates;
-};
-
 const convertCoords = (coordinates) => {
   const retCoordinates = coordinates.map((polygon) => {
     return polygon.map((ring) => {
@@ -70,22 +57,14 @@ const convertCoords = (coordinates) => {
   return retCoordinates;
 };
 
-const moveGeometry = (coordinates) => {
-  // move the coordinates right
-  let offset = 0.0;
+const convertGeometry = (coordinates) => {
   let workingCoordinates = [...coordinates];
 
   if (crossesAntiMeridian(workingCoordinates)) {
     workingCoordinates = convertCoords(workingCoordinates);
-
-    const MOVE_AMOUNT = 1.0;
-    while (crossesMeridian(workingCoordinates)) {
-      workingCoordinates = _moveGeometry(workingCoordinates, MOVE_AMOUNT);
-      offset = offset + MOVE_AMOUNT;
-    }
   }
 
-  return [workingCoordinates, offset];
+  return workingCoordinates;
 };
 
 const main = async () => {
@@ -99,28 +78,32 @@ const main = async () => {
     });
 
     const geoJsonFeatures = result.features.map((feature) => {
-      // due to the "antimeridian" problem, we need to move each feature so the west-most point is at -180
-      // then calculate the center of mass,
-      // then move the center of mass back based on the offset.
-      // if(feature.properties.COUNTRY == "United States") {
       let multiPolygonCoordinates = feature.geometry.coordinates;
       if (feature.geometry.type === "Polygon") {
         multiPolygonCoordinates = [feature.geometry.coordinates];
         feature.geometry.type = "MultiPolygon";
       }
 
-      const [movedGeometry, offset] = moveGeometry(multiPolygonCoordinates);
+      // The geometry will only get "converted" by the convertGeometry()
+      // function if it intersects the antimeridian. If it does, it will convert
+      // all the positive values to negative (ex: 179.0 to -181.0)
+      const convertedGeometry = convertGeometry(multiPolygonCoordinates);
+      const convertedFeature = Object.assign({}, feature);
+      convertedFeature.geometry.coordinates = convertedGeometry;
+      const movedCenterOfMass = turf.centerOfMass(convertedFeature);
 
-      const movedFeature = Object.assign({}, feature);
-      movedFeature.geometry.coordinates = movedGeometry;
-      const movedCenterOfMass = turf.centerOfMass(movedFeature);
-      movedCenterOfMass[0] = movedCenterOfMass[0] - offset;
+      // If the center of mass is "out of bounds", correct it:
+      if (movedCenterOfMass.geometry.coordinates[0] < -180.0) {
+        movedCenterOfMass.geometry.coordinates[0] =
+          movedCenterOfMass.geometry.coordinates[0] + 360.0;
+      }
 
       const retData = Object.assign({}, feature);
       retData.geometry = movedCenterOfMass.geometry;
       return retData;
     });
 
+    // Build up the GeoJson and CSV files:
     const geoJson = {
       type: "FeatureCollection",
       features: geoJsonFeatures,
@@ -137,6 +120,7 @@ const main = async () => {
       })
     );
 
+    // Write the GeoJson and CSV files:
     await fs.writeFile(
       "dist/countries.geojson",
       JSON.stringify(geoJson),
