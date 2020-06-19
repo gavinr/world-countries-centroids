@@ -8,6 +8,86 @@ const Papa = require("papaparse");
 const COUNTRIES_POLYGONS_FEATURE_SERVICE_URL =
   "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/World_Countries_(Generalized)/FeatureServer/0";
 
+const crossesMeridian = (coordinates) => {
+  let atLeastOnePositive = false;
+  let atLeastOneNegative = false;
+
+  coordinates.forEach((polygon) => {
+    polygon.forEach((ring) => {
+      ring.forEach((point) => {
+        if (point[0] > 0.0) {
+          atLeastOnePositive = true;
+        } else {
+          atLeastOneNegative = true;
+        }
+      });
+    });
+  });
+  return atLeastOnePositive && atLeastOneNegative;
+};
+
+const crossesAntiMeridian = (coordinates) => {
+  let atLeastOneNearAntiMeridian = false;
+
+  coordinates.forEach((polygon) => {
+    polygon.forEach((ring) => {
+      ring.forEach((point) => {
+        if (point[0] > 179.0 || point[0] < -179.0) {
+          atLeastOneNearAntiMeridian = true;
+        }
+      });
+    });
+  });
+  return crossesMeridian(coordinates) && atLeastOneNearAntiMeridian;
+};
+
+const _moveGeometry = (coordinates, amount) => {
+  // move by 1 degree right!
+  const retCoordinates = coordinates.map((polygon) => {
+    return polygon.map((ring) => {
+      return ring.map((point) => {
+        return [point[0] + amount, point[1]];
+      });
+    });
+  });
+
+  return retCoordinates;
+};
+
+const convertCoords = (coordinates) => {
+  const retCoordinates = coordinates.map((polygon) => {
+    return polygon.map((ring) => {
+      return ring.map((point) => {
+        if (point[0] > 0.0) {
+          return [-180.0 - (180.0 - point[0]), point[1]];
+        } else {
+          return point;
+        }
+      });
+    });
+  });
+
+  return retCoordinates;
+};
+
+const moveGeometry = (coordinates) => {
+  // move the coordinates right
+  let offset = 0.0;
+  let workingCoordinates = [...coordinates];
+
+  if (crossesAntiMeridian(workingCoordinates)) {
+    workingCoordinates = convertCoords(workingCoordinates);
+
+    const MOVE_AMOUNT = 1.0;
+    while (crossesMeridian(workingCoordinates)) {
+      workingCoordinates = _moveGeometry(workingCoordinates, MOVE_AMOUNT);
+      offset = offset + MOVE_AMOUNT;
+    }
+  }
+
+  return [workingCoordinates, offset];
+};
+
 const main = async () => {
   try {
     const result = await featureLayer.queryFeatures({
@@ -18,16 +98,29 @@ const main = async () => {
       f: "geojson",
     });
 
-    console.log("result", result.features[0].attributes);
-    console.log("result", result.features[0].geometry);
     const geoJsonFeatures = result.features.map((feature) => {
+      // due to the "antimeridian" problem, we need to move each feature so the west-most point is at -180
+      // then calculate the center of mass,
+      // then move the center of mass back based on the offset.
+      // if(feature.properties.COUNTRY == "United States") {
+      let multiPolygonCoordinates = feature.geometry.coordinates;
+      if (feature.geometry.type === "Polygon") {
+        multiPolygonCoordinates = [feature.geometry.coordinates];
+        feature.geometry.type = "MultiPolygon";
+      }
+
+      const [movedGeometry, offset] = moveGeometry(multiPolygonCoordinates);
+
+      const movedFeature = Object.assign({}, feature);
+      movedFeature.geometry.coordinates = movedGeometry;
+      const movedCenterOfMass = turf.centerOfMass(movedFeature);
+      movedCenterOfMass[0] = movedCenterOfMass[0] - offset;
+
       const retData = Object.assign({}, feature);
-      const centerOfMass = turf.centerOfMass(feature);
-      retData.geometry = centerOfMass.geometry;
+      retData.geometry = movedCenterOfMass.geometry;
       return retData;
     });
 
-    // console.log("geoJson:", geoJsonFeatures);
     const geoJson = {
       type: "FeatureCollection",
       features: geoJsonFeatures,
@@ -49,11 +142,11 @@ const main = async () => {
       JSON.stringify(geoJson),
       "utf8",
       () => {
-        console.log("done0");
+        console.log("done: geojson");
       }
     );
     await fs.writeFile("dist/countries.csv", csv, "utf8", () => {
-      console.log("done1");
+      console.log("done: csv");
     });
   } catch (e) {
     console.log(e);
