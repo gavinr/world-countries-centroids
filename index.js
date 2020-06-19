@@ -94,8 +94,9 @@ const main = async () => {
       movedFeature.geometry.coordinates = movedGeometry;
       const movedCenterOfMass = turf.centerOfMass(movedFeature);
 
-      if (movedCenterOfMass[0] < -180.0) {
-        movedCenterOfMass[0] = movedCenterOfMass[0] + 360.0;
+      if (movedCenterOfMass.geometry.coordinates[0] < -180.0) {
+        movedCenterOfMass.geometry.coordinates[0] =
+          movedCenterOfMass.geometry.coordinates[0] + 360.0;
       }
 
       const retData = Object.assign({}, feature);
