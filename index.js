@@ -57,7 +57,7 @@ const convertCoords = (coordinates) => {
   return retCoordinates;
 };
 
-const moveGeometry = (coordinates) => {
+const convertGeometry = (coordinates) => {
   let workingCoordinates = [...coordinates];
 
   if (crossesAntiMeridian(workingCoordinates)) {
@@ -78,22 +78,21 @@ const main = async () => {
     });
 
     const geoJsonFeatures = result.features.map((feature) => {
-      // due to the "antimeridian" problem, we need to move each feature so the west-most point is at -180
-      // then calculate the center of mass,
-      // then move the center of mass back based on the offset.
-      // if(feature.properties.COUNTRY == "United States") {
       let multiPolygonCoordinates = feature.geometry.coordinates;
       if (feature.geometry.type === "Polygon") {
         multiPolygonCoordinates = [feature.geometry.coordinates];
         feature.geometry.type = "MultiPolygon";
       }
 
-      const movedGeometry = moveGeometry(multiPolygonCoordinates);
+      // The geometry will only get "converted" by the convertGeometry()
+      // function if it intersects the antimeridian. If it does, it will convert
+      // all the positive values to negative (ex: 179.0 to -181.0)
+      const convertedGeometry = convertGeometry(multiPolygonCoordinates);
+      const convertedFeature = Object.assign({}, feature);
+      convertedFeature.geometry.coordinates = convertedGeometry;
+      const movedCenterOfMass = turf.centerOfMass(convertedFeature);
 
-      const movedFeature = Object.assign({}, feature);
-      movedFeature.geometry.coordinates = movedGeometry;
-      const movedCenterOfMass = turf.centerOfMass(movedFeature);
-
+      // If the center of mass is "out of bounds", correct it:
       if (movedCenterOfMass.geometry.coordinates[0] < -180.0) {
         movedCenterOfMass.geometry.coordinates[0] =
           movedCenterOfMass.geometry.coordinates[0] + 360.0;
@@ -104,6 +103,7 @@ const main = async () => {
       return retData;
     });
 
+    // Build up the GeoJson and CSV files:
     const geoJson = {
       type: "FeatureCollection",
       features: geoJsonFeatures,
@@ -120,6 +120,7 @@ const main = async () => {
       })
     );
 
+    // Write the GeoJson and CSV files:
     await fs.writeFile(
       "dist/countries.geojson",
       JSON.stringify(geoJson),
