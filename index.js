@@ -41,19 +41,6 @@ const crossesAntiMeridian = (coordinates) => {
   return crossesMeridian(coordinates) && atLeastOneNearAntiMeridian;
 };
 
-const _moveGeometry = (coordinates, amount) => {
-  // move by 1 degree right!
-  const retCoordinates = coordinates.map((polygon) => {
-    return polygon.map((ring) => {
-      return ring.map((point) => {
-        return [point[0] + amount, point[1]];
-      });
-    });
-  });
-
-  return retCoordinates;
-};
-
 const convertCoords = (coordinates) => {
   const retCoordinates = coordinates.map((polygon) => {
     return polygon.map((ring) => {
@@ -71,21 +58,13 @@ const convertCoords = (coordinates) => {
 };
 
 const moveGeometry = (coordinates) => {
-  // move the coordinates right
-  let offset = 0.0;
   let workingCoordinates = [...coordinates];
 
   if (crossesAntiMeridian(workingCoordinates)) {
     workingCoordinates = convertCoords(workingCoordinates);
-
-    const MOVE_AMOUNT = 1.0;
-    while (crossesMeridian(workingCoordinates)) {
-      workingCoordinates = _moveGeometry(workingCoordinates, MOVE_AMOUNT);
-      offset = offset + MOVE_AMOUNT;
-    }
   }
 
-  return [workingCoordinates, offset];
+  return workingCoordinates;
 };
 
 const main = async () => {
@@ -109,12 +88,15 @@ const main = async () => {
         feature.geometry.type = "MultiPolygon";
       }
 
-      const [movedGeometry, offset] = moveGeometry(multiPolygonCoordinates);
+      const movedGeometry = moveGeometry(multiPolygonCoordinates);
 
       const movedFeature = Object.assign({}, feature);
       movedFeature.geometry.coordinates = movedGeometry;
       const movedCenterOfMass = turf.centerOfMass(movedFeature);
-      movedCenterOfMass[0] = movedCenterOfMass[0] - offset;
+
+      if (movedCenterOfMass[0] < -180.0) {
+        movedCenterOfMass[0] = movedCenterOfMass[0] + 360.0;
+      }
 
       const retData = Object.assign({}, feature);
       retData.geometry = movedCenterOfMass.geometry;
