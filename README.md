@@ -22,7 +22,7 @@ There are multiple ways to access the data.
 
 ### Download
 
-You may [download](https://github.com/gavinr/world-countries-centroids/archive/refs/heads/master.zip) the data and check the [dist folder](https://github.com/gavinr/world-countries-centroids/tree/master/dist) for data.
+Go to the [releases page](https://github.com/gavinr/world-countries-centroids/releases) to download, then check the [dist folder](https://github.com/gavinr/world-countries-centroids/tree/master/dist) for the data files.
 
 ### ArcGIS Feature Service
 
