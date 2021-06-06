@@ -1,6 +1,6 @@
 {
   "name": "world-countries-centroids",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Centroids of world countries in CSV, GeoJson, etc",
   "main": "index.js",
   "scripts": {
