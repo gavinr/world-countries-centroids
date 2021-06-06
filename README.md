@@ -24,7 +24,7 @@ There are multiple ways to access the data.
 
 Go to the [releases page](https://github.com/gavinr/world-countries-centroids/releases) to download, then check the [dist folder](https://github.com/gavinr/world-countries-centroids/tree/master/dist) for the data files.
 
-### ArcGIS Feature Service
+### REST API (ArcGIS Feature Service)
 
 The data is also published to an [ArcGIS Online hosted feature service](https://arcgis.com/home/item.html?id=782028ffbbfc47799f80e738f81c568d). The REST endpoint to [query](https://developers.arcgis.com/rest/services-reference/enterprise/query-feature-service-layer-.htm) is:
 
