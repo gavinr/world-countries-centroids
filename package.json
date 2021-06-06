@@ -18,7 +18,7 @@
     "centroids"
   ],
   "author": "Gavin Rehkemper",
-  "license": "Apache-2.0",
+  "license": "MIT",
   "bugs": {
     "url": "https://github.com/gavinr/world-countries-centroids/issues"
   },
