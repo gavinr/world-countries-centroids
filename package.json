@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "release": "np"
   },
   "repository": {
     "type": "git",
@@ -23,13 +23,18 @@
     "url": "https://github.com/gavinr/world-countries-centroids/issues"
   },
   "homepage": "https://github.com/gavinr/world-countries-centroids#readme",
-  "dependencies": {
+  "devDependencies": {
     "@esri/arcgis-rest-auth": "^2.13.2",
     "@esri/arcgis-rest-feature-layer": "^2.13.2",
     "@esri/arcgis-rest-request": "^2.13.2",
     "@turf/turf": "^5.1.6",
     "cross-fetch": "^3.0.5",
     "isomorphic-form-data": "^2.0.0",
+    "np": "^7.5.0",
     "papaparse": "^5.2.0"
+  },
+  "np": {
+    "tests": false,
+    "yarn": false
   }
 }
