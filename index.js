@@ -1,10 +1,9 @@
-require("cross-fetch/polyfill");
-require("isomorphic-form-data");
 const fs = require("fs");
-const featureLayer = require("@esri/arcgis-rest-feature-layer");
+const featureLayer = require("@esri/arcgis-rest-feature-service");
 const turf = require("@turf/turf");
 const Papa = require("papaparse");
 
+// https://www.arcgis.com/home/item.html?id=2b93b06dc0dc4e809d3c8db5cb96ba69
 const COUNTRIES_POLYGONS_FEATURE_SERVICE_URL =
   "https://services.arcgis.com/P3ePLMYs2RVChkJx/arcgis/rest/services/World_Countries_(Generalized)/FeatureServer/0";
 
@@ -78,10 +77,21 @@ const main = async () => {
     });
 
     const geoJsonFeatures = result.features.map((feature) => {
-      let multiPolygonCoordinates = feature.geometry.coordinates;
+      let multiPolygonCoordinates;
       if (feature.geometry.type === "Polygon") {
         multiPolygonCoordinates = [feature.geometry.coordinates];
         feature.geometry.type = "MultiPolygon";
+      } else {
+        // find largest ring in multipolygon
+        let runningLargestArea = 0.0;
+        feature.geometry.coordinates.forEach((ring) => {
+          console.log('checking area of ', ring);
+          const area = turf.area(turf.polygon(ring));
+          if(area > runningLargestArea) {
+            runningLargestArea = area;
+            multiPolygonCoordinates = [ring];
+          }
+        })
       }
 
       // The geometry will only get "converted" by the convertGeometry()

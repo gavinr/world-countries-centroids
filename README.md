@@ -7,6 +7,8 @@ Centroids of world countries in CSV, GeoJson, etc
 - _There is no generally accepted definition of geographic center, and no completely satisfactory method for determining it._ ([USGS](https://pubs.er.usgs.gov/publication/70039437))
 - _The geographic center of a region is a fundamental geographic concept, and yet there is no commonly accepted method for its determination._ ([Peter A. Rogerson](https://www.tandfonline.com/doi/full/10.1080/00330124.2015.1062707))
 
+Version 1.0 has been updated to use the centroid of the largest land mass. This way large countries with many disparate areas (like USA, New Zealand, Chile, Portugal) have more rational center points.
+
 ## Schema
 
 - `longitude`
@@ -34,19 +36,19 @@ https://services9.arcgis.com/l9yXFvhjz46ekkZV/arcgis/rest/services/Countries_Cen
 
 For example, get the center point of Mexico:
 
-https://services9.arcgis.com/l9yXFvhjz46ekkZV/arcgis/rest/services/Countries_Centroids/FeatureServer/0/query?where=ISO+%3D+%27MX%27&outFields=*&f=pgeojson
+<https://services9.arcgis.com/l9yXFvhjz46ekkZV/arcgis/rest/services/Countries_Centroids/FeatureServer/0/query?where=ISO+%3D+%27MX%27&outFields=*&f=pgeojson>
 
 ### REST call - all data
 
 Use JSDelivr to get all the data as CSV or GeoJSON:
 
-- https://cdn.jsdelivr.net/gh/gavinr/world-countries-centroids@v0.2.0/dist/countries.geojson
-- https://cdn.jsdelivr.net/gh/gavinr/world-countries-centroids@v0.2.0/dist/countries.csv
+- <https://cdn.jsdelivr.net/gh/gavinr/world-countries-centroids@v1/dist/countries.geojson>
+- <https://cdn.jsdelivr.net/gh/gavinr/world-countries-centroids@v1/dist/countries.csv>
 
 ### NPM
 
-https://www.npmjs.com/package/world-countries-centroids
+<https://www.npmjs.com/package/world-countries-centroids>
 
-## License 
+## License
 
 See [LICENSE](LICENSE) file.
