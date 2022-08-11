@@ -2,6 +2,11 @@
 
 Centroids of world countries in CSV, GeoJson, etc
 
+<p align="center">
+  <img src="https://github.com/gavinr/world-countries-centroids/blob/master/countries.png?raw=true" alt="Map of the country centroids" />
+</p>
+
+
 ## Background/Problems
 
 - _There is no generally accepted definition of geographic center, and no completely satisfactory method for determining it._ ([USGS](https://pubs.er.usgs.gov/publication/70039437))
