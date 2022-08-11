@@ -3,7 +3,7 @@
 Centroids of world countries in CSV, GeoJson, etc
 
 <p align="center">
-  <img src="https://github.com/gavinr/world-countries-centroids/blob/master/countries.png?raw=true" alt="Map of the country centroids" />
+  <a href="https://gavinr.github.io/geojson-viewer/?url=https://cdn.jsdelivr.net/gh/gavinr/world-countries-centroids@v1/dist/countries.geojson"><img src="https://github.com/gavinr/world-countries-centroids/blob/master/countries.png?raw=true" alt="Map of the country centroids" /></a>
 </p>
 
 
@@ -43,11 +43,13 @@ For example, get the center point of Mexico:
 
 <https://services9.arcgis.com/l9yXFvhjz46ekkZV/arcgis/rest/services/Countries_Centroids/FeatureServer/0/query?where=ISO+%3D+%27MX%27&outFields=*&f=pgeojson>
 
+... or for USA and territories: <https://services9.arcgis.com/l9yXFvhjz46ekkZV/ArcGIS/rest/services/Countries_Centroids/FeatureServer/0/query?where=AFF_ISO%3D%27US%27&f=pgeojson> ([Preview](https://services9.arcgis.com/l9yXFvhjz46ekkZV/ArcGIS/rest/services/Countries_Centroids/FeatureServer/0/query?where=AFF_ISO%3D%27US%27&f=pgeojson))
+
 ### REST call - all data
 
 Use JSDelivr to get all the data as CSV or GeoJSON:
 
-- <https://cdn.jsdelivr.net/gh/gavinr/world-countries-centroids@v1/dist/countries.geojson>
+- <https://cdn.jsdelivr.net/gh/gavinr/world-countries-centroids@v1/dist/countries.geojson> ([Preview](https://gavinr.github.io/geojson-viewer/?url=https://cdn.jsdelivr.net/gh/gavinr/world-countries-centroids@v1/dist/countries.geojson))
 - <https://cdn.jsdelivr.net/gh/gavinr/world-countries-centroids@v1/dist/countries.csv>
 
 ### NPM
