@@ -43,7 +43,7 @@ For example, get the center point of Mexico:
 
 <https://services9.arcgis.com/l9yXFvhjz46ekkZV/arcgis/rest/services/Countries_Centroids/FeatureServer/0/query?where=ISO+%3D+%27MX%27&outFields=*&f=pgeojson>
 
-... or for USA and territories: <https://services9.arcgis.com/l9yXFvhjz46ekkZV/ArcGIS/rest/services/Countries_Centroids/FeatureServer/0/query?where=AFF_ISO%3D%27US%27&f=pgeojson> ([Preview](https://gavinr.github.io/geojson-viewer/?url=https://services9.arcgis.com/l9yXFvhjz46ekkZV/ArcGIS/rest/services/Countries_Centroids/FeatureServer/0/query?where=AFF_ISO%3D%27US%27&f=pgeojson))
+... or for USA and territories: <https://services9.arcgis.com/l9yXFvhjz46ekkZV/ArcGIS/rest/services/Countries_Centroids/FeatureServer/0/query?where=AFF_ISO%3D%27US%27&outFields=*&f=pgeojson> ([Preview](https://gavinr.github.io/geojson-viewer/?url=https://services9.arcgis.com/l9yXFvhjz46ekkZV/ArcGIS/rest/services/Countries_Centroids/FeatureServer/0/query?where=AFF_ISO%3D%27US%27&outFields=*&f=pgeojson))
 
 ### REST call - all data
 
