@@ -3,7 +3,7 @@
 Centroids of world countries in CSV, GeoJson, etc
 
 <p align="center">
-  <a href="https://gavinr.github.io/geojson-viewer/?url=https://cdn.jsdelivr.net/gh/gavinr/world-countries-centroids@v1/dist/countries.geojson"><img src="https://github.com/gavinr/world-countries-centroids/blob/master/countries.png?raw=true" alt="Map of the country centroids" /></a>
+  <a href="https://gavinr.github.io/geojson-viewer/?silent=true&url=https://cdn.jsdelivr.net/gh/gavinr/world-countries-centroids@v1/dist/countries.geojson"><img src="https://github.com/gavinr/world-countries-centroids/blob/master/countries.png?raw=true" alt="Map of the country centroids" /></a>
 </p>
 
 
